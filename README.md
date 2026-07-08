@@ -61,3 +61,9 @@ You can launch the progression analysis and view your dashboard in two ways:
    *(Optionally pass a custom vault path as an argument: `python analyze.py "C:\path\to\vault"`)*
 
 Both methods compile your statistics, generate the local dashboard, and save it cleanly under the `analysis/zetamac_progression.html` folder inside your vault for easy access, automatically launching it in your browser.
+
+---
+
+## 💡 Credits / Attribution
+
+This repository is built upon the original [theriley106/zetamac-analyzer](https://github.com/theriley106/zetamac-analyzer) project, extending it from external HTTP/Lambda servers to full local Obsidian vault integration and progression analysis.
