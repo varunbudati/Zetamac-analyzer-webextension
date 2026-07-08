@@ -1,28 +1,38 @@
 {
-  "name": "Injecta",
-  "version": "0.0.1",
-  "manifest_version": 2,
-  "description": "Injecting stuff",
-  "homepage_url": "http://danharper.me",
+  "name": "Zetamac → Obsidian",
+  "version": "2.1.0",
+  "manifest_version": 3,
+  "description": "Automatically export Zetamac game results as Obsidian-flavored markdown notes with per-question analysis.",
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Zetamac → Obsidian"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
-   {
-      //Set your address you want the extension will work in mataches!!!
-   "matches": ["https://arithmetic.zetamac.com/game*"],
-    "js": ["content.js"],
-    "run_at": "document_end"
-   }
+    {
+      "matches": ["https://arithmetic.zetamac.com/*"],
+      "js": ["interceptor.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://arithmetic.zetamac.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
   ],
-  "browser_action": {
-    "default_title": "Inject!"
-  },
-  "browser_action": {
-    "default_popup": "popup.html"
-  },
-  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'",
   "permissions": [
-    "https://*/*",
-    "http://*/*",
-    "tabs",
-    "storage"
+    "storage",
+    "downloads",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "https://arithmetic.zetamac.com/*"
   ]
 }

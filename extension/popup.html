@@ -1,13 +1,459 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=360" />
+  <title>Zetamac → Obsidian</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 360px;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f0f14;
+      color: #e4e4ef;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .header-text h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f4f4ff;
+      line-height: 1.2;
+    }
+
+    .header-text p {
+      font-size: 11px;
+      color: #8b8ba3;
+      font-weight: 500;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #1a1a24;
+      border: 1px solid #2a2a3a;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: #3a3a5a;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #8b8ba3;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-label .badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(124, 58, 237, 0.2);
+      color: #a78bfa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .card-label .badge-alt {
+      background: rgba(107, 107, 131, 0.2);
+      color: #8b8ba3;
+    }
+
+    /* ── Input ── */
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      color: #e4e4ef;
+      background: #12121a;
+      border: 1px solid #2a2a3a;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .input-wrapper input:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    .input-wrapper input::placeholder {
+      color: #4a4a6a;
+      font-size: 12px;
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: #6b6b83;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .input-hint code {
+      font-size: 10px;
+      padding: 1px 5px;
+      background: rgba(124, 58, 237, 0.1);
+      border-radius: 4px;
+      color: #a78bfa;
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0;
+      font-size: 10px;
+      color: #4a4a6a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2a2a3a;
+    }
+
+    /* ── Toggle ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #d4d4e7;
+    }
+
+    .toggle-label small {
+      display: block;
+      font-size: 11px;
+      color: #6b6b83;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #2a2a3a;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+
+    .toggle-slider::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      background: #6b6b83;
+      border-radius: 50%;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: #7c3aed;
+    }
+
+    .toggle input:checked + .toggle-slider::after {
+      transform: translateX(20px);
+      background: #fff;
+    }
+
+    /* ── Button ── */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn.saved {
+      background: linear-gradient(135deg, #059669, #10b981);
+    }
+
+    .btn-secondary {
+      background: #1e1e2d;
+      border: 1px solid #3a3a5a;
+      color: #a78bfa;
+      margin-top: 10px;
+    }
+    .btn-secondary:hover {
+      background: #2a2a3d;
+      border-color: #7c3aed;
+    }
+    .btn-secondary.testing {
+      background: #12121a;
+      color: #6b6b83;
+      border-color: #2a2a3a;
+      cursor: not-allowed;
+    }
+    .btn-secondary.success {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .btn-secondary.error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    /* ── Status ── */
+    .status {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #a78bfa;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #a78bfa;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── Method indicator ── */
+    .method-indicator {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 10px;
+      color: #6b6b83;
+    }
+
+    .method-indicator .method-native {
+      color: #10b981;
+    }
+
+    .method-indicator .method-download {
+      color: #f59e0b;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #1e1e2a;
+      text-align: center;
+    }
+
+    .footer p {
+      font-size: 10px;
+      color: #4a4a6a;
+      line-height: 1.5;
+    }
+
+    .footer a {
+      color: #7c3aed;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-  <div id="data"></div>
-  <input type="text" id="text"></input>
-  <button id="set">Set</button>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-icon">🧠</div>
+      <div class="header-text">
+        <h1>Zetamac → Obsidian</h1>
+        <p>Auto-export your practice sessions</p>
+      </div>
+    </div>
+
+    <!-- Vault Path (primary) -->
+    <div class="card">
+      <div class="card-label">
+        Obsidian Vault Folder
+        <span class="badge">Recommended</span>
+      </div>
+      <div class="input-wrapper">
+        <input
+          type="text"
+          id="vaultPath"
+          placeholder="C:\Users\you\Obsidian Vault\Zetamac"
+          spellcheck="false"
+          autocomplete="off"
+        />
+      </div>
+      <div class="input-hint">
+        Absolute path to your Obsidian vault folder.<br>
+        Files are written directly via native messaging — no Downloads folder needed.
+      </div>
+    </div>
+
+    <div class="divider">or</div>
+
+    <!-- Subfolder fallback -->
+    <div class="card">
+      <div class="card-label">
+        Downloads Subfolder
+        <span class="badge badge-alt">Fallback</span>
+      </div>
+      <div class="input-wrapper">
+        <input
+          type="text"
+          id="subfolder"
+          placeholder="Zetamac"
+          spellcheck="false"
+          autocomplete="off"
+        />
+      </div>
+      <div class="input-hint">
+        Used when vault path is empty or native host isn't installed.<br>
+        Saves to <code>Downloads/Zetamac/</code>.
+      </div>
+    </div>
+
+    <!-- Auto-download Toggle -->
+    <div class="card">
+      <div class="toggle-row">
+        <div class="toggle-label">
+          Auto-export
+          <small>Save .md file when game ends</small>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="autoDownload" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <button class="btn" id="save">Save Settings</button>
+
+    <!-- Test Button -->
+    <button class="btn btn-secondary" id="test">Test Connection</button>
+ 
+    <!-- View Progression Dashboard Button -->
+    <button class="btn btn-secondary" id="analyze" style="margin-top: 10px;">📊 View Progression Dashboard</button>
+
+    <!-- Status -->
+    <div class="status">
+      <span class="status-badge">
+        <span class="status-dot"></span>
+        Listening on Zetamac
+      </span>
+    </div>
+
+    <div class="method-indicator" id="methodIndicator"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>
+        Play a game on <a href="https://arithmetic.zetamac.com" target="_blank">zetamac.com</a> — your session will be exported automatically.
+      </p>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

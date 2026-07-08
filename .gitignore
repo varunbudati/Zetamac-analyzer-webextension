@@ -103,3 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 .DS_Store
+
+# Zetamac Analyzer local generated files
+native-host/com.zetamac.obsidian.json
+native-host/write_file.bat
+zetamac_progression.html
