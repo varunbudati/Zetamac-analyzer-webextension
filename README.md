@@ -1,56 +1,63 @@
-## What is Zetamac?
+#🧠 Zetamac → Obsidian Chrome Extension & Analyzer
 
-Zetamac is an online test where you're given two minutes to solve as many arithmetic problems as you can.
+Automatically export your [Zetamac](https://arithmetic.zetamac.com/) mental math practice sessions directly into your **Obsidian Vault** as detailed markdown notes, and visualize your progression with an interactive local dashboard.
 
-It's a really fun game, but the primary reason for using Zetamac is that it simulates the questions that are commonly asked during [Quantitative Research](https://en.wikipedia.org/wiki/Quantitative_research) interviews at finance firms.  My friends and I regularly use Zetamac to prepare for these interviews, and we generally resort to manually recording our scores in excel to calculate our progress over a given period of time.
+---
 
-This can become cumbersome if you're inputting a large quantity of scores, and the visualization tools built into Excel are not as advanced as external options like MatPlotLib.
+## ✨ Features
 
-<p align="center">
-  <img src="static/excel.png" width="500px"/>
-  <p align="center">Excel Example</p>
-</p>
+- 📂 **Direct Obsidian Vault Export:** Automatically writes game logs directly to your Obsidian vault (using standard Chrome Native Messaging powered by a Python helper script). No manual downloads or copy-pasting required.
+- 📋 **Granular Markdown Session Logs:** Each game session generates an Obsidian-ready note containing:
+  - YAML frontmatter with metadata (`tags`, `score`, `duration`, `avg_time_ms`, etc.).
+  - A summary table showing counts and solve speeds for each operator (➕, ➖, ✖️, ➗).
+  - A **Slowest Problems** table showing where you spent the most time.
+  - A full chronological logs table.
+  - Actionable recommendations based on the carry-over patterns of that specific run.
+- 📊 **Interactive local Progression Dashboard:** Analyze your performance over time with a dark-themed visual dashboard.
+  - Generates line charts for **Score Trend** and **Average Speed Progression** using Chart.js.
+  - Visualizes your **Operation Distribution** (stacked bar charts) and solve speed trends by operator.
+  - Includes a searchable, sortable run history log table.
+- 💡 **Actionable Practice Targets:** The analyzer parses your individual solved questions across all games to compute number-specific speeds. It highlights the top 3 specific factors (e.g., multiplying by 17) and divisors (e.g., dividing by 12) you struggle with most.
 
-## What does this do?
+---
 
-This chrome extension enables automatic exporting of your zetamac scores.  In the example used in this repo, we are sending the scores to a Lambda Function and saving the results to DynamoDB.
+## 🛠️ Installation & Setup
 
-This extension allows you to automatically POST your score data to any URL in the following format:
+### 1. Load the Extension in Chrome
+1. Clone this repository to your machine.
+2. Open Google Chrome and navigate to `chrome://extensions/`.
+3. Enable **Developer mode** in the top right.
+4. Click **Load unpacked** in the top left and select the `extension/` directory of this repository.
+5. Copy the **Extension ID** displayed on the extension's card (e.g., `faacnaopdjapflcalnnlgheodnggkcci`).
 
-```javascript
-{"score": int(scoreVal)}
-```
+### 2. Register the Native Messaging Host
+To allow Chrome to securely write files directly to your vault, register the helper host:
+1. Open PowerShell in the `native-host/` folder.
+2. Run the installer script with your extension ID:
+   ```powershell
+   .\install.ps1 -ExtensionId "YOUR_EXTENSION_ID"
+   ```
+3. Restart Chrome (`chrome://restart`) so the browser picks up the new registry key permissions.
 
-## Installation
+### 3. Configure settings
+1. Click the **Zetamac → Obsidian** extension icon in your Chrome toolbar.
+2. In the **Obsidian Vault Folder** field, enter the absolute path to your target folder (e.g. `C:\Users\you\Obsidian\Zetamac`).
+3. Click **Save Settings**.
+4. Click **Test Connection**. It should display **`✅ Direct Write Success!`** to confirm the setup is working.
 
-Visit `chrome://extensions/` and click "Load Unpacked":
+---
 
-<p align="center">
-  <img src="static/load.png" width="300px"/>
-</p>
+## 📈 Running the Progression Analyzer
 
-Select the code from `extension/` and wait for chrome to finalize the third party extension install.  You should see a new icon in your Chrome toolbar when the extension is successfully installed.
+You can launch the progression analysis and view your dashboard in two ways:
 
-The endpoint URL can be configured by clicking the extension icon in Chrome:
+1. **Directly from the Extension:**
+   Open the extension popup and click the **📊 View Progression Dashboard** button.
+2. **Via Command Line:**
+   Run the analysis script in your terminal:
+   ```bash
+   python analyze.py
+   ```
+   *(Optionally pass a custom vault path as an argument: `python analyze.py "C:\path\to\vault"`)*
 
-<p align="center">
-  <img src="static/endpoint.png" width="300px"/>
-</p>
-
-You can set this endpoint to any URL that accepts a POST request containing Zetamac score information.
-
-## Lambda Function
-
-In the `lambda/` folder there is a basic lambda function that contains logic to accept POST requests containing zetamac score information sent from the Chrome extension.
-
-The function saves the current score and timestamp to a DynamoDB table.
-
-In addition, the Lambda function accepts GET requests to return the score data in chronological order.  This can be extremely useful for time series visualizations like this:
-
-<p align="center">
-  <img src="static/example.png" width="700px"/>
-</p>
-
-
-
-
+Both methods compile your statistics, generate the local dashboard, and save it cleanly under the `analysis/zetamac_progression.html` folder inside your vault for easy access, automatically launching it in your browser.
